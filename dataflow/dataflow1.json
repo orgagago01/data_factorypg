@@ -1,0 +1,58 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "Algo"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "resultadoalgo"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filtradoprecio"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SNo as string,",
+				"          Date as string,",
+				"          Price as string,",
+				"          Open as string,",
+				"          High as string,",
+				"          Low as string,",
+				"          {Vol.} as string,",
+				"          {Change %} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: true) ~> Algo",
+				"Algo select(mapColumn(",
+				"          SNo,",
+				"          Fecha = Date,",
+				"          Precio = Price,",
+				"          Apertura = Open,",
+				"          Alto = High,",
+				"          Bajo = Low,",
+				"          Volumen = {Vol.},",
+				"          {Cambio %} = {Change %}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> filtradoprecio",
+				"filtradoprecio sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> resultadoalgo"
+			]
+		}
+	}
+}
